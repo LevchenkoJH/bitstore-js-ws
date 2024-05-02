@@ -9,4 +9,3 @@ browser-test/browser-test.js
 lib/
 build/
 package-lock.json
-yarn.lock
