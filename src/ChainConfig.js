@@ -11,12 +11,12 @@ var config = {
     //   chain_id:
     //     "4018d7844c78f6a6c41c6a552b898022310fc5dec06da467ee7905a8dad512c8"
     // },
-    // Test: {
-    //   core_asset: "TEST",
-    //   address_prefix: "TEST",
-    //   chain_id:
-    //     "39f5e2ede1f8bc1a3a54a7914414e3779e33193f1f5693510e73cb7a87617447"
-    // },
+    Test: {
+      core_asset: "BSC",
+      address_prefix: "BSC",
+      chain_id:
+        "35c9c3f210e3c3fac530b6c0e14aca656800c998d10202ce50d1bf5086d02f32"
+    },
   },
 
   /** Set a few properties for known chain IDs. */
