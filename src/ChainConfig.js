@@ -15,7 +15,7 @@ var config = {
       core_asset: "BSC",
       address_prefix: "BSC",
       chain_id:
-        "35c9c3f210e3c3fac530b6c0e14aca656800c998d10202ce50d1bf5086d02f32"
+        "4476387c10501a7272f82d85de0d5884d22b77f3b917f9479cca30b236755e89"
     },
   },
 
