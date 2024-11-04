@@ -74,12 +74,13 @@ export const network = get("_net");
 export const history = get("_hist");
 export const crypto = get("_crypt");
 export const orders = get("_orders");
+export const storage_broker = get("_sb");
 
 const newApis = () => ({
   connect: (
     cs,
     connectTimeout,
-    optionalApis = { enableCrypto: false, enableOrders: false }
+    optionalApis = { enableCrypto: false, enableOrders: false, enableStorageBroker: false }
   ) => {
     // console.log("INFO\tApiInstances\tconnect\t", cs);
     Apis.url = cs;
@@ -119,6 +120,8 @@ const newApis = () => ({
         Apis._db = new GrapheneApi(Apis.ws_rpc, "database");
         Apis._net = new GrapheneApi(Apis.ws_rpc, "network_broadcast");
         Apis._hist = new GrapheneApi(Apis.ws_rpc, "history");
+        if (optionalApis.enableStorageBroker)
+          Apis._sb = new GrapheneApi(Apis.ws_rpc, "storage_broker");
         if (optionalApis.enableOrders)
           Apis._orders = new GrapheneApi(Apis.ws_rpc, "orders");
         if (optionalApis.enableCrypto)
@@ -141,6 +144,7 @@ const newApis = () => ({
             Apis._hist.init();
             if (optionalApis.enableOrders) Apis._orders.init();
             if (optionalApis.enableCrypto) Apis._crypt.init();
+            if (optionalApis.enableStorageBroker) Apis._sb.init();
           });
         };
         Apis.ws_rpc.on_close = () => {
@@ -176,5 +180,6 @@ const newApis = () => ({
   history_api: () => Apis._hist,
   crypto_api: () => Apis._crypt,
   orders_api: () => Apis._orders,
+  storage_broker_api: () => Apis._sb,
   setRpcConnectionStatusCallback: callback => (Apis.statusCb = callback)
 });
