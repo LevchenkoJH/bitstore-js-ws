@@ -11,11 +11,16 @@ var config = {
     //   chain_id:
     //     "4018d7844c78f6a6c41c6a552b898022310fc5dec06da467ee7905a8dad512c8"
     // },
-    Test: {
+    // Test: {
+    //   core_asset: "BSC",
+    //   address_prefix: "BSC",
+    //   chain_id:
+    //     "4476387c10501a7272f82d85de0d5884d22b77f3b917f9479cca30b236755e89"
+    // },
+    BitStore: {
       core_asset: "BSC",
       address_prefix: "BSC",
-      chain_id:
-        "4476387c10501a7272f82d85de0d5884d22b77f3b917f9479cca30b236755e89"
+      chain_id: "1bc463cc5edf2d0ba1dec107562d797aff27c11dd3750388998fc04cd605e971"
     },
   },
 
