@@ -116,46 +116,61 @@ const newApis = () => ({
     Apis.init_promise = Apis.ws_rpc
       .login(rpc_user, rpc_password)
       .then(() => {
-        //console.log("Connected to API node:", cs);
-        Apis._db = new GrapheneApi(Apis.ws_rpc, "database");
-        Apis._net = new GrapheneApi(Apis.ws_rpc, "network_broadcast");
-        Apis._hist = new GrapheneApi(Apis.ws_rpc, "history");
+        var db_promise = null;
+
         if (optionalApis.enableStorageBroker)
           Apis._sb = new GrapheneApi(Apis.ws_rpc, "storage_broker");
+        else {
+          Apis._db = new GrapheneApi(Apis.ws_rpc, "database");
+          Apis._net = new GrapheneApi(Apis.ws_rpc, "network_broadcast");
+          Apis._hist = new GrapheneApi(Apis.ws_rpc, "history");
+
+          db_promise = Apis._db.init().then(() => {
+            //https://github.com/cryptonomex/graphene/wiki/chain-locked-tx
+            return Apis._db.exec("get_chain_id", []).then(_chain_id => {
+              Apis.chain_id = _chain_id;
+              return ChainConfig.setChainId(_chain_id);
+              //DEBUG console.log("chain_id1",this.chain_id)
+            });
+          });
+        }
         if (optionalApis.enableOrders)
           Apis._orders = new GrapheneApi(Apis.ws_rpc, "orders");
         if (optionalApis.enableCrypto)
           Apis._crypt = new GrapheneApi(Apis.ws_rpc, "crypto");
-        var db_promise = Apis._db.init().then(() => {
-          //https://github.com/cryptonomex/graphene/wiki/chain-locked-tx
-          return Apis._db.exec("get_chain_id", []).then(_chain_id => {
-            Apis.chain_id = _chain_id;
-            return ChainConfig.setChainId(_chain_id);
-            //DEBUG console.log("chain_id1",this.chain_id)
-          });
-        });
+
         Apis.ws_rpc.on_reconnect = () => {
           if (!Apis.ws_rpc) return;
           Apis.ws_rpc.login("", "").then(() => {
-            Apis._db.init().then(() => {
-              if (Apis.statusCb) Apis.statusCb("reconnect");
-            });
-            Apis._net.init();
-            Apis._hist.init();
             if (optionalApis.enableOrders) Apis._orders.init();
             if (optionalApis.enableCrypto) Apis._crypt.init();
-            if (optionalApis.enableStorageBroker) Apis._sb.init();
+            if (optionalApis.enableStorageBroker)
+              Apis._sb.init();
+            else {
+              Apis._db.init().then(() => {
+                if (Apis.statusCb) Apis.statusCb("reconnect");
+              });
+              Apis._net.init();
+              Apis._hist.init();
+            }
           });
         };
+
         Apis.ws_rpc.on_close = () => {
           Apis.close().then(() => {
             if (Apis.closeCb) Apis.closeCb();
           });
         };
-        let initPromises = [db_promise, Apis._net.init(), Apis._hist.init()];
 
+        const initPromises = [];
+
+        if (!optionalApis.enableStorageBroker) initPromises.push(db_promise);
+        if (!optionalApis.enableStorageBroker) initPromises.push(Apis._net.init());
+        if (!optionalApis.enableStorageBroker) initPromises.push(Apis._hist.init());
         if (optionalApis.enableOrders) initPromises.push(Apis._orders.init());
         if (optionalApis.enableCrypto) initPromises.push(Apis._crypt.init());
+        if (optionalApis.enableStorageBroker) initPromises.push(Apis._sb.init());
+
         return Promise.all(initPromises);
       })
       .catch(err => {
