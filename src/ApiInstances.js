@@ -110,6 +110,9 @@ const newApis = () => ({
         if (Apis._db && !closed) {
           Apis._db.exec("get_objects", [["2.1.0"]]).catch(e => {});
         }
+        else if (Apis._sb && !closed) {
+          Apis._sb.exec("chain_id", []).catch(e => {});
+        }
       }
     );
 
